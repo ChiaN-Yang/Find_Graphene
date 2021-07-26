@@ -61,6 +61,11 @@ def getphoto():
     
     return result
 
+def CCD_dir_save(result, name):
+    global im
+    if result == 1:
+        im.save(str(name) + ".png")
+
 def CCD_save(result, folder_name, name):
     global im
     if result == 1:

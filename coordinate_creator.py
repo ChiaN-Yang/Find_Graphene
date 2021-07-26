@@ -49,8 +49,8 @@ def coor_gen(input_1_x, input_1_y, multiple=20, Lx=10, Ly=10):
             var_x = Origin_x - (i * Px)
             var_y = Origin_y + y_acc
     
-            coordinate_x.append(var_x)
-            coordinate_y.append(var_y)
+            coordinate_x.append(round(var_x,3))
+            coordinate_y.append(round(var_y,3))
             
     # Create extra coordinates
     input_2_x = input_1_x - Lx

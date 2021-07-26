@@ -95,7 +95,7 @@ class esp:
 		self.dev.close()
         
 	def __del__(self):
-		self.dev.close()
+		self.close()
 
 
 class prior_motor:
@@ -129,7 +129,7 @@ class prior_motor:
         self.motor.close()
 
     def __del__(self):
-        self.motor.close()
+        self.close()
 
 
 class controller(esp, prior_motor):
