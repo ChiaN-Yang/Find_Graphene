@@ -1,4 +1,6 @@
 import serial
+from getCCDphoto import getphoto, CCD_save, tenengrad
+from time import sleep
 
 class esp:
 	def __init__(self, dev="COM3", b=921600, axis=1, reset=True, initpos = 0.0, useaxis=[], timeout=0.5):
@@ -7,19 +9,6 @@ class esp:
 		if(len(self.inuse)==0):
 			self.inuse = [axis]
 		self.defaxis = axis
-# =============================================================================
-# 		if(reset):
-# 			for n in self.inuse:
-# 				self.reset(n)
-# 				r = self.check_errors()
-# 				if(r!=0):
-# 					print("Error while setting up controller, error # %d"%r)
-# 				if(initpos!=0):
-# 					self.setpos(initpos)
-# 					r = self.check_errors()
-# 					if(r!=0):
-# 						print("Error while setting up controller, error # %d"%r)
-# =============================================================================
 
 	def reset(self,axis):
 		self.dev.write(b"%dOR;%dWS0\r"%(axis,axis))
@@ -60,30 +49,30 @@ class esp:
 		return float(self.dev.readline())
     
 	def get_pos(self):
-		Rotation_angle = self.getpos(1)
-		X_pos = self.getpos(2)
-		Y_pos = self.getpos(3)
+		Rotation_angle = self.getpos(3)
+		X_pos = self.getpos(1)
+		Y_pos = self.getpos(2)
 		return X_pos, Y_pos
     
 	def angle_move(self, rel_angle):
-		angle = self.getpos(1)
-		self.setpos(angle + rel_angle, 1)
+		angle = self.getpos(3)
+		self.setpos(angle + rel_angle, 3)
     
 	def x_move(self, rel_var_x):
-		x_pos = self.getpos(2)
-		self.setpos(x_pos + rel_var_x, 2)
+		x_pos = self.getpos(1)
+		self.setpos(x_pos + rel_var_x, 1)
         
 	def y_move(self, rel_var_y):
-		y_pos = self.getpos(3)
-		self.setpos(y_pos + rel_var_y, 3)
+		y_pos = self.getpos(2)
+		self.setpos(y_pos + rel_var_y, 2)
         
 	def x_y_move(self, abs_x, abs_y):
-		self.setpos(abs_x, 2)
-		self.setpos(abs_y, 3)
+		self.setpos(abs_x, 1)
+		self.setpos(abs_y, 2)
         
 	def write_corrd(self, name):
-		X_pos = self.getpos(2)
-		Y_pos = self.getpos(3)
+		X_pos = self.getpos(1)
+		Y_pos = self.getpos(2)
 		path = str(name) + '_test.txt'
 		f = open(path, 'a')
 		f.write(str(X_pos))
@@ -124,7 +113,50 @@ class prior_motor:
         self.motor.write(cmd.encode())
         response = self.motor.readline().decode()
         print(str(response))
+
+    def focusLens(self, zNum, zRange, imgPath):
+        """Perfrom Num times z scans to find the best figure ranging from -Range to Range"""
+        image_Q = []
+        origin_z = self.get_z_pos()
+        for j in range(zNum):
+            tar_z = origin_z - zRange + (j * 2.*zRange/(zNum-1.))
+            self.move_z_pos(tar_z)
+            CCD_save(getphoto(), imgPath)
+            imageVar = tenengrad(imgPath)
+            image_QVar = (imageVar, tar_z)
+            image_Q.append(image_QVar)
+        # Move to the z position which is corresponding to the best quality figure
+        bestZ = max(image_Q)[1]
+        self.move_z_pos(bestZ)
+        sleep(0.2)
+        # Save the original corner figure
+        CCD_save(getphoto(), imgPath)
+        return round(bestZ, 3)
+
+    def focusLens_fast(self, zNum, zRange, imgPath, i):
+        """Perfrom Num times z scans to find the best figure ranging from 0 to Range"""
+        # Form the image-Quality list ot record the quality of the figure
+        image_Q = []
+        # get current z position
+        current_z = self.get_z_pos()
+        # Perfrom n times z scans to find the best figure ranging from 0 to d
+        for j in range(zNum):
+            if i % 2 == 1:  j = -j
+            tar_z = current_z + (j * zRange/(zNum-1.0))
+            self.move_z_pos(tar_z)
+            CCD_save(getphoto(), imgPath)
+            imageVar = tenengrad(imgPath)
+            image_QVar = (imageVar, tar_z)
+            image_Q.append(image_QVar)
+        # Move to the z position which is corresponding to the best quality figure
+        bestZ = max(image_Q)[1]
+        self.move_z_pos(bestZ)
+        sleep(0.2)
+        # Save the figure again
+        CCD_save(getphoto(), imgPath)
+        return round(bestZ, 3)
         
+		
     def close(self):
         self.motor.close()
 
