@@ -146,7 +146,7 @@ def detect(folder_name, RESULT_PATH, main_coor, probability=0.7, flip_horizontal
         plt.savefig(f'{RESULT_PATH}/{n}d.png')
         shutil.copyfile(f'{FOLDER_PATH}/{n}.png', f'{RESULT_PATH}/{n}.png')
         # Write info to a txt
-        f = open('./'+ folder_name +'/'+'Log file.txt', 'a')
+        f = open(f'{RESULT_PATH}/Log file.txt', 'a')
         f.write(f'\n{n}.png\t({main_coor.iloc[n][0]}, {main_coor.iloc[n][1]})')
         f.close()
   plt.show()

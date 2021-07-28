@@ -66,10 +66,10 @@ def CCD_dir_save(result, name):
     if result == 1:
         im.save(str(name) + ".png")
 
-def CCD_save(result, folder_name, name):
+def CCD_save(result, imgPath):
     global im
     if result == 1:
-        im.save('./'+ folder_name +'/'+str(name) + ".png")
+        im.save(imgPath)
         
 def laplacian(imgPath):
     image_ori = cv2.imread(imgPath)
@@ -93,8 +93,8 @@ if __name__ == '__main__':
         folder_name = str(datetime.now())[:19].replace(':', "'")
         photo_name = 'test'
         os.mkdir(folder_name)
-        CCD_save(getphoto(), folder_name, photo_name)
         imgPath = './'+ folder_name +'/'+ photo_name + '.png'
+        CCD_save(getphoto(), imgPath)
         print('laplacian:', laplacian(imgPath), '\ntenengrad:', tenengrad(imgPath))
     
     main()
