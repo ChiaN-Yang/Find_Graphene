@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 ## Object Detection From TF2 Saved Model
 # coding: utf-8
-""" This file will detect graphene and record the location
-"""
+""" This file will detect graphene and record the location"""
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'    # Suppress TensorFlow logging (1)
 import pathlib
 import tensorflow as tf
+import pandas as pd
 
 tf.get_logger().setLevel('ERROR')           # Suppress TensorFlow logging (2)
 
@@ -15,6 +15,14 @@ gpus = tf.config.experimental.list_physical_devices('GPU')
 for gpu in gpus:
     tf.config.experimental.set_memory_growth(gpu, True)
 
+# enter data name and filter probability
+folder_name = input("please enter folder name\n")
+FOLDER_PATH = f'./{folder_name}'
+RESULT_PATH = f'{FOLDER_PATH}/Detection result/detection again'
+if not os.path.exists(RESULT_PATH):
+    os.mkdir(RESULT_PATH)
+probability = float(input("please enter filter probability\n"))
+main_coor = pd.read_table(f'{FOLDER_PATH}/Detection result/main_coordinates.txt', sep='\t')
 
 # Load the model
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -67,6 +75,28 @@ import matplotlib.pyplot as plt
 import shutil
 import warnings
 warnings.filterwarnings('ignore')   # Suppress Matplotlib warnings
+from modify_saturation import modify_lightness_saturation
+import cv2
+
+def load_image_into_numpy_array_mod(path):
+    """Load an image from file into a numpy array.
+
+    Puts image into numpy array to feed into tensorflow graph.
+    Note that by convention we put it into a numpy array with shape
+    (height, width, channels), where channels=3 for RGB.
+
+    Args:
+      path: the file path to the image
+
+    Returns:
+      uint8 numpy array with shape (img_height, img_width, 3)
+    """
+    image = cv2.imread(path)
+    image = modify_lightness_saturation(image, 20, 300)
+    image = Image.fromarray(cv2.cvtColor(image,cv2.COLOR_BGR2RGB))
+    image = np.array(image)
+    
+    return image
 
 def load_image_into_numpy_array(path):
     """Load an image from file into a numpy array.
@@ -83,16 +113,15 @@ def load_image_into_numpy_array(path):
     """
     return np.array(Image.open(path))
 
-def detect(folder_name, RESULT_PATH, main_coor, probability=0.7, flip_horizontally=False, grayscale=False, not_photo=1):
+def detect(flip_horizontally=False, grayscale=False, not_photo=1):
   # Count the number of photos
-  FOLDER_PATH = str(pathlib.Path.cwd() / folder_name)
   num_file = len([name for name in os.listdir(FOLDER_PATH) if os.path.isfile(os.path.join(FOLDER_PATH, name))])-not_photo
   IMAGE_PATHS = [f'{FOLDER_PATH}/{i}.png' for i in range(num_file)]
 
   for n,image_path in enumerate(IMAGE_PATHS):
 
       print('Running inference for {}... '.format(image_path), end='')
-
+      
       image_np = load_image_into_numpy_array(image_path)
 
       # Things to try:
@@ -147,6 +176,8 @@ def detect(folder_name, RESULT_PATH, main_coor, probability=0.7, flip_horizontal
         shutil.copyfile(f'{FOLDER_PATH}/{n}.png', f'{RESULT_PATH}/{n}.png')
         # Write info to a txt
         f = open(f'{RESULT_PATH}/Log file.txt', 'a')
-        f.write(f'\n{n}.png\t({main_coor.iloc[n][0]}, {main_coor.iloc[n][1]})')
+        f.write(f'{n}.png\t({main_coor.iloc[n][0]}, {main_coor.iloc[n][1]})\n')
         f.close()
   plt.show()
+
+detect(flip_horizontally=False, grayscale=False)

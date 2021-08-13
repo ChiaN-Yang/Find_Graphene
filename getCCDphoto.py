@@ -44,7 +44,7 @@ def getphoto():
     # or just the client area. 
     result = windll.user32.PrintWindow(hwnd, saveDC.GetSafeHdc(), 1)
     #result = windll.user32.PrintWindow(hwnd, saveDC.GetSafeHdc(), 0)
-    if result == 1: print('screenshot succeeded')
+    #if result == 1: print('screenshot succeeded')
     
     bmpinfo = saveBitMap.GetInfo()
     bmpstr = saveBitMap.GetBitmapBits(True)
@@ -85,6 +85,7 @@ def tenengrad(imgPath):
     absX = cv2.convertScaleAbs(x)
     absY = cv2.convertScaleAbs(y)
     dst = cv2.addWeighted(absX,0.5,absY,0.5,0).var()
+    print(f'tenengrad:{dst:.1f}')
     return dst
         
 

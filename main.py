@@ -2,12 +2,15 @@
 ## main
 ''' Run this program to scan the sample and detect graphene'''
 from coordinate_creator import coor_gen
-from getCCDphoto import CCD_dir_save
 from microscope_controller import esp, prior_motor
 from datetime import datetime
+from preprocessing import check_screen_scale_rate
 import os
 import sys
 import pandas as pd
+
+# check if screen scale rate equal to 1.5
+check_screen_scale_rate(1.5)
 
 # [TIME] setup a start_time and record progress
 start_time = datetime.now()
@@ -28,7 +31,7 @@ os.mkdir(resultPath)
 
 # Perfrom 9 times z scans to find the best figure ranging from -20 to 20
 imgPath = './'+ folder_name +'/'+ 'Origin.png'
-origin_z = mt.focusLens(9, 20, imgPath)
+origin_z = mt.focusLens(7, 30, imgPath)
 
 # Write the info to a txt file
 f = open(resultPath+'/Log file.txt', 'a')
@@ -45,23 +48,32 @@ row_len = main.shape[0]
 # creat z record
 z_array = []
 
+
+count_row = 1
+reverse = 1
+
 try:
     # Start looping every coordinate and save screenshot 
     for i in range(row_len):
         # Get the start point from corrdinate generator
         abs_x = main.iloc[i][0]
         abs_y = main.iloc[i][1]
+        # apply the start point to it
         controller.x_y_move(abs_x, abs_y)
 
         imgPath = './'+ folder_name +'/'+ str(i) + '.png'
         # return the best quality z
-        abs_z = mt.focusLens_fast(3, 6, imgPath, i)
+        if count_row % (num_y + 1) == 0:
+            count_row = 1
+            reverse *= -1
+        abs_z = mt.focusLens_fast2(2, 10, imgPath, reverse)
 
         print(f'{i}th figure. Clear z is: {abs_z}')
         progress += 1
         print(f'\nCurrent progress: {round(progress/row_len*100)}%')
         z_record = (abs_x, abs_y, abs_z)
         z_array.append(z_record)
+        count_row += 1
 except:
     # Go back to origin x, y (input_1_x & y)
     controller.x_y_move(input_1_x, input_1_y)
@@ -100,4 +112,4 @@ z_data.to_csv(resultPath+'/main_coordinates.txt', sep='\t', mode='w')
 # Start TF2 Object Detection
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 from graphene_detection import detect
-detect(folder_name, resultPath, main, probability=0.7, flip_horizontally=False, grayscale=False)
+detect(folder_name, resultPath, main, probability=0.3, flip_horizontally=False, grayscale=False)

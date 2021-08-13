@@ -12,14 +12,20 @@ from math import floor
 import pandas as pd
 #TODO: confirm the period of every block size
 
-def coor_gen(input_1_x, input_1_y, multiple=20, Lx=10, Ly=10):
+def coor_gen(input_1_x, input_1_y, multiple=10, Lx=10, Ly=10):
     # Define the period of every block size
-    if multiple == 20:
+    if multiple == 2:
+        Px = 3.2
+        Py = 3.2
+    elif multiple == 10:
+        Px = 0.813
+        Py = 0.748
+    elif multiple == 20:
         Px = 0.36875
-        Py = 0.30625
+        Py = 0.34
     elif multiple == 50:
         Px = 0.1475
-        Py = 0.1225
+        Py = 0.128
 
     # Find out the number of blocks in x and y direction
     number_x = floor(Lx/Px)

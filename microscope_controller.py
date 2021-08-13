@@ -120,6 +120,7 @@ class prior_motor:
         origin_z = self.get_z_pos()
         for j in range(zNum):
             tar_z = origin_z - zRange + (j * 2.*zRange/(zNum-1.))
+            sleep(0.2)
             self.move_z_pos(tar_z)
             CCD_save(getphoto(), imgPath)
             imageVar = tenengrad(imgPath)
@@ -133,7 +134,7 @@ class prior_motor:
         CCD_save(getphoto(), imgPath)
         return round(bestZ, 3)
 
-    def focusLens_fast(self, zNum, zRange, imgPath, i):
+    def focusLens_fast(self, zNum, zRange, imgPath, reverse):
         """Perfrom Num times z scans to find the best figure ranging from 0 to Range"""
         # Form the image-Quality list ot record the quality of the figure
         image_Q = []
@@ -141,8 +142,7 @@ class prior_motor:
         current_z = self.get_z_pos()
         # Perfrom n times z scans to find the best figure ranging from 0 to d
         for j in range(zNum):
-            if i % 2 == 1:  j = -j
-            tar_z = current_z + (j * zRange/(zNum-1.0))
+            tar_z = current_z + (j * zRange/(zNum-1.0)) * reverse
             self.move_z_pos(tar_z)
             CCD_save(getphoto(), imgPath)
             imageVar = tenengrad(imgPath)
@@ -156,6 +156,31 @@ class prior_motor:
         CCD_save(getphoto(), imgPath)
         return round(bestZ, 3)
         
+    def focusLens_fast2(self, zNum, zRange, imgPath, reverse):
+        """Perfrom Num times z scans to find the best figure ranging from 0 to Range"""
+        # Form the image-Quality list ot record the quality of the figure
+        image_Q = []
+        # get current z position
+        current_z = self.get_z_pos()
+        CCD_save(getphoto(), imgPath)
+        imageVar = tenengrad(imgPath)
+        image_QVar = (imageVar, current_z)
+        image_Q.append(image_QVar)
+        # Perfrom n times z scans to find the best figure ranging from 0 to d
+        for j in range(zNum):
+            tar_z = current_z + ((j+1) * zRange/(zNum-1.0)) * reverse
+            self.move_z_pos(tar_z)
+            CCD_save(getphoto(), imgPath)
+            imageVar = tenengrad(imgPath)
+            image_QVar = (imageVar, tar_z)
+            image_Q.append(image_QVar)
+        # Move to the z position which is corresponding to the best quality figure
+        bestZ = max(image_Q)[1]
+        self.move_z_pos(bestZ)
+        sleep(0.2)
+        # Save the figure again
+        CCD_save(getphoto(), imgPath)
+        return round(bestZ, 3)
 		
     def close(self):
         self.motor.close()
