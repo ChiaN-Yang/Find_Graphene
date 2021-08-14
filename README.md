@@ -1,5 +1,5 @@
-# Find_Graphene
-Let charge-coupled device scanned if single layer graphene there
+# Graphene_Finder
+Autonomous robotic searching of graphene
 
 # Note
-Before running this file, you should put your trained model under Find_Graphene folder
+Before running this file, you should replace the folder named my_model by your own model
