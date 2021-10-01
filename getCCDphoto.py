@@ -27,7 +27,7 @@ def getphoto():
     #left, top, right, bot = win32gui.GetWindowRect(hwnd)
 
     # Change screen magnification
-    mag = 1.5
+    mag = 1
     w = int((right - left)*mag)
     h = int((bot - top)*mag)
 

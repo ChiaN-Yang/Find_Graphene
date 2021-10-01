@@ -10,7 +10,7 @@ import sys
 import pandas as pd
 
 # check if screen scale rate equal to 1.5
-check_screen_scale_rate(1.5)
+check_screen_scale_rate(1)
 
 # [TIME] setup a start_time and record progress
 start_time = datetime.now()
@@ -66,7 +66,7 @@ try:
         if count_row % (num_y + 1) == 0:
             count_row = 1
             reverse *= -1
-        abs_z = mt.focusLens_fast2(2, 10, imgPath, reverse)
+        abs_z = mt.focusLens_fast2(2, 5, imgPath, reverse)
 
         print(f'{i}th figure. Clear z is: {abs_z}')
         progress += 1

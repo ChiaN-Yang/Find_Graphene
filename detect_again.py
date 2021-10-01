@@ -2,11 +2,11 @@
 ## Object Detection From TF2 Saved Model
 # coding: utf-8
 """ This file will detect graphene and record the location"""
+# %%
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'    # Suppress TensorFlow logging (1)
 import pathlib
 import tensorflow as tf
-import pandas as pd
 
 tf.get_logger().setLevel('ERROR')           # Suppress TensorFlow logging (2)
 
@@ -15,14 +15,6 @@ gpus = tf.config.experimental.list_physical_devices('GPU')
 for gpu in gpus:
     tf.config.experimental.set_memory_growth(gpu, True)
 
-# enter data name and filter probability
-folder_name = input("please enter folder name\n")
-FOLDER_PATH = f'./{folder_name}'
-RESULT_PATH = f'{FOLDER_PATH}/Detection result/detection again'
-if not os.path.exists(RESULT_PATH):
-    os.mkdir(RESULT_PATH)
-probability = float(input("please enter filter probability\n"))
-main_coor = pd.read_table(f'{FOLDER_PATH}/Detection result/main_coordinates.txt', sep='\t')
 
 # Load the model
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -30,8 +22,10 @@ import time
 from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils as viz_utils
 
-PATH_TO_MODEL_DIR = str(pathlib.Path.cwd() / 'my_model_centernet')
-PATH_TO_SAVED_MODEL = PATH_TO_MODEL_DIR + "/saved_model"
+model_name = 'my_model_centernet'
+# 'my_model_centernet'
+PATH_TO_MODEL_DIR = str(pathlib.Path.cwd() / model_name)
+PATH_TO_SAVED_MODEL = PATH_TO_MODEL_DIR + "\saved_model"
 
 print('Loading model...', end='')
 start_time = time.time()
@@ -55,6 +49,7 @@ category_index = label_map_util.create_category_index_from_labelmap(PATH_TO_LABE
                                                                     use_display_name=True)
 
 
+# %%
 # Putting everything together
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # The code shown below loads an image, runs it through the detection model and visualizes the
@@ -77,6 +72,16 @@ import warnings
 warnings.filterwarnings('ignore')   # Suppress Matplotlib warnings
 from modify_saturation import modify_lightness_saturation
 import cv2
+import pandas as pd
+
+# enter data name and filter probability
+folder_name = input("please enter folder name\n")
+probability = float(input("please enter filter probability\n"))
+FOLDER_PATH = f'./{folder_name}'
+RESULT_PATH = f'{FOLDER_PATH}/Detection result/{model_name} {probability}'
+if not os.path.exists(RESULT_PATH):
+    os.mkdir(RESULT_PATH)
+main_coor = pd.read_table(f'{FOLDER_PATH}/Detection result/main_coordinates.txt', sep='\t')
 
 def load_image_into_numpy_array_mod(path):
     """Load an image from file into a numpy array.
@@ -151,6 +156,7 @@ def detect(flip_horizontally=False, grayscale=False, not_photo=1):
       # detection_classes should be ints.
       detections['detection_classes'] = detections['detection_classes'].astype(np.int64)
 
+
       image_np_with_detections = image_np.copy()
 
       viz_utils.visualize_boxes_and_labels_on_image_array(
@@ -160,7 +166,7 @@ def detect(flip_horizontally=False, grayscale=False, not_photo=1):
             detections['detection_scores'],
             category_index,
             use_normalized_coordinates=True,
-            max_boxes_to_draw=200,
+            max_boxes_to_draw=10,
             min_score_thresh=.30,
             agnostic_mode=False)
 
@@ -169,7 +175,7 @@ def detect(flip_horizontally=False, grayscale=False, not_photo=1):
       print('Probability: ', detections['detection_scores'][0])
       if detections['detection_scores'][0] > probability:
         print('getcha!')
-        plt.figure()
+        plt.figure(figsize=(38,34))
         plt.imshow(image_np_with_detections)
         # save photos
         plt.savefig(f'{RESULT_PATH}/{n}d.png')
