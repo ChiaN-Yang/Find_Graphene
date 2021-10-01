@@ -11,7 +11,7 @@ Before running this file, you should replace the folder named my_model by your o
 - coordinate_creator.py
     - 規劃顯微鏡掃描的路徑
     - 輸入起點座標後執行該程式，即可看到預計掃描路徑
-- get_ccd_photo.py
+- getCCDphoto.py
     - 擷取顯微鏡畫面
 	- 該檔案另有清晰度分析功能
 - microscope_controller.py
@@ -29,3 +29,21 @@ Before running this file, you should replace the folder named my_model by your o
 - OpenCV
 - PySerial
 - TensorFlow 2 Object Detection API
+
+## 操作步驟
+1. 關閉Prior Demo x64
+2. 設定esp301
+	Menu → Run program → 數字3 → Run
+	(恢復設定為Menu → Run program → 數字1 → Run)
+3. 打開SpinView、CCD
+4. 將載物台轉正
+5. 打開紅十字(Draw center cross hair)
+6. 放樣品並確定樣品是正的
+4. 將Blackfly S BFS-U3-51S5C 19370957視窗拉出並調至適當大小
+4. 打開Spyder(tensorflow)
+5. 執行main
+
+## 重新偵測照片
+1. 執行detect_again.py
+2. 輸入要偵測的資料夾名稱
+3. 輸入過濾多少機率以下的照片 Ex: 0.7
