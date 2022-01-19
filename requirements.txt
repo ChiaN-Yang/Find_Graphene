@@ -1,0 +1,4 @@
+Pandas
+PyWin32
+OpenCV
+PySerial
