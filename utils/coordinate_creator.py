@@ -12,7 +12,7 @@ from math import floor
 import pandas as pd
 #TODO: confirm the period of every block size
 
-def coor_gen(input_1_x, input_1_y, multiple=10, Lx=10, Ly=10):
+def coordinate_generator(input_1_x, input_1_y, multiple=10, Lx=10, Ly=10):
     # Define the period of every block size
     if multiple == 2:
         Px = 3.2

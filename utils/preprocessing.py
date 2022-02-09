@@ -1,7 +1,7 @@
 import win32gui, win32print, win32con
 from win32.win32api import GetSystemMetrics
 import sys
-from microscope_controller import esp
+from utils.microscope_controller import esp
 
 def get_real_resolution():
     """Get the true resolution"""

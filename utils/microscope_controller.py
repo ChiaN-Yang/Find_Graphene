@@ -1,5 +1,5 @@
 import serial
-from getCCDphoto import getphoto, CCD_save, tenengrad
+from utils.getCCDphoto import getphoto, CCD_save, tenengrad
 from time import sleep
 
 class esp:

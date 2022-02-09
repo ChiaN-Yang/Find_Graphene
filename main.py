@@ -1,10 +1,9 @@
 #!/usr/bin/python
 ## main
 ''' Run this program to scan the sample and detect graphene'''
-from coordinate_creator import coor_gen
-from microscope_controller import esp, prior_motor
+from utils import coordinate_generator, check_screen_scale_rate
+from utils.microscope_controller import esp, prior_motor
 from datetime import datetime
-from preprocessing import check_screen_scale_rate
 import os
 import sys
 import pandas as pd
@@ -40,7 +39,7 @@ f.write('The Origin coordinate: x = ' + str(input_1_x) + ', y = ' + str(input_1_
 f.close()
 
 # generate main corrd. and extra coord. (pd.dataframe)
-main, extra, num_x, num_y = coor_gen(input_1_x, input_1_y)
+main, extra, num_x, num_y = coordinate_generator(input_1_x, input_1_y)
 
 # get the total length of corrdinates for looping later
 row_len = main.shape[0]
@@ -111,5 +110,5 @@ z_data.to_csv(resultPath+'/main_coordinates.txt', sep='\t', mode='w')
 
 # Start TF2 Object Detection
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-from graphene_detection import detect
+from utils.graphene_detection import detect
 detect(folder_name, resultPath, main, probability=0.3, flip_horizontally=False, grayscale=False)

@@ -11,19 +11,17 @@ Created on Wed Jun 30 17:32:17 2021
 
 @author: jerry
 """
-from PyQt5 import QtWidgets, QtGui, QtCore
-from PyQt5.QtGui import QIntValidator, QRegExpValidator
-from PyQt5.QtWidgets import QMessageBox, QFileDialog
-from PyQt5.QtCore import Qt, QRegExp
-from FindTargetProcessor import Ui_MainWindow
-from microscope_controller import esp, prior_motor
+from PyQt5 import QtWidgets, QtCore
+from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtCore import Qt
+from find_target.find_target_processor import Ui_MainWindow
+from utils.microscope_controller import esp, prior_motor
 import sys
 import os
-import numpy as np
-from datetime import datetime
 
 temp = 0
 row_len = 0
+
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):

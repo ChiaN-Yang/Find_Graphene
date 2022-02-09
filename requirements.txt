@@ -1,4 +1,5 @@
 Pandas
 PyWin32
-OpenCV
+opencv-python
 PySerial
+tensorflow

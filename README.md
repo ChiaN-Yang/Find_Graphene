@@ -1,5 +1,5 @@
 # Graphene_Finder
-<a href="#"><img src="https://img.shields.io/badge/python-v3.6+-blue.svg?logo=python&style=for-the-badge" /></a>
+<a href="#"><img src="https://img.shields.io/badge/TensorFlow-2.5-FF6F00?logo=tensorflow" /></a>
 
 Deep Learning-based Automatic Searching for Graphene
 
