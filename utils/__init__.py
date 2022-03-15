@@ -1,2 +1,2 @@
-from .coordinate_creator import coordinate_generator
-from .preprocessing import check_screen_scale_rate
+from .scan_device import scan_device
+from .detect_again import detect_again

@@ -1,1 +1,4 @@
-manual
+utils/__pycache__
+utils/lib/__pycache__
+data
+my_mask_model
